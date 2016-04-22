@@ -1,0 +1,56 @@
+package br.gov.sp.policiamilitar.controledocumentos.provedores;
+
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.stereotype.Component;
+
+import br.gov.sp.policiamilitar.controledocumentos.modelo.Role;
+import br.gov.sp.policiamilitar.controledocumentos.modelo.Usuario;
+import br.gov.sp.policiamilitar.controledocumentos.services.UsuarioService;
+
+@Component
+public class ProvedorAutenticacao implements AuthenticationProvider {
+
+	@Autowired
+	private UsuarioService userService;
+
+	public Authentication authenticate(Authentication authentication) throws AuthenticationException {
+		String username = authentication.getName();
+		String password = (String) authentication.getCredentials();
+
+		Usuario user = userService.recuperaUsuarioPorLogin(username);
+
+		if (user == null || !user.getUserName().equalsIgnoreCase(username)) {
+			throw new BadCredentialsException("Username not found.");
+		}
+
+		if (!password.equals(user.getPassword())) {
+			throw new BadCredentialsException("Wrong password.");
+		}
+
+		Set<GrantedAuthority> authorities = new HashSet<GrantedAuthority>();
+
+		List<Role> listRoles = user.getRoles();
+		for (Role r : listRoles) {
+			authorities.add(new SimpleGrantedAuthority(r.getName()));
+		}
+		User us = new User(user.getUserName(), user.getPassword(), authorities);
+		return new UsernamePasswordAuthenticationToken(us, password, authorities);
+	}
+
+	public boolean supports(Class<?> authentication) {
+		return authentication.equals(UsernamePasswordAuthenticationToken.class);
+	}
+
+}

@@ -1,0 +1,77 @@
+apply plugin: 'java'
+apply plugin: 'eclipse-wtp'
+apply plugin: 'war'
+
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+war {
+	baseName = 'ControleDocumentos'
+	version = '1.0.0'
+}
+
+repositories {
+	mavenCentral()
+}
+
+configurations {
+	providedRuntime
+}
+
+dependencies {
+
+providedCompile 'javax:javaee-api:7.+'
+
+//commons-dbcp2
+compile 'org.apache.commons:commons-dbcp2:2.+'
+
+//MySQL
+compile 'mysql:mysql-connector-java:5.+'
+
+//Spring Framework
+
+compile 'org.springframework:spring-context:4.+'
+//compile 'org.springframework:spring-context-support:4.+'
+compile 'org.springframework:spring-webmvc:4.+'
+compile 'org.springframework:spring-orm:4.+'
+compile 'org.springframework.security:spring-security-web:4.+'
+compile 'org.springframework.security:spring-security-config:4.+'
+//compile 'org.springframework.ws:spring-ws:2.1.4.RELEASE'
+
+//Hibernate
+compile 'org.hibernate:hibernate-entitymanager:5.+'
+
+//taglibs
+//compile 'taglibs:standard:1.+'
+	
+//Log4j 
+compile 'log4j:log4j:1.+'
+
+
+//Zxing
+//compile 'com.google.zxing:core:3.+'
+
+//Gson
+//compile 'com.google.code.gson:gson:2.+'
+
+testCompile 'junit:junit:4.12'
+
+}
+
+
+eclipse {
+    wtp {
+        facet {
+            facet name: "java", version: "1.8"          // Java version
+            facet name: "jst.web", version: "3.1"       // Dynamic Web Application
+        	facet name: "jst.jaxrs", version: "2.0"
+        	
+        }
+    }
+
+}
+
+test {
+
+}
